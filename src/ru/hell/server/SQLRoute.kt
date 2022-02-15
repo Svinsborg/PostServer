@@ -32,7 +32,7 @@ var y = 0
 
 
 fun Routing.sql() {
-    get("/post") {
+    get("/api/v1/post") {
         call.application.environment.log.info("-------->>> Request to API <<<--------")
         try {
             connect().use {

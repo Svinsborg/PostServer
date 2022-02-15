@@ -7,13 +7,13 @@ import io.ktor.response.*
 import io.ktor.routing.*
 
 fun Routing.root(){
-    get("/"){
+    get("/api/v1/"){
         call.respondText("Hello, im Ktor!", ContentType.Text.Plain)
     }
 }
 
 fun Routing.rootPost(){
-    post("/"){
+    post("/api/v1/"){
         val post = call.receive<String>()
         call.respond("Recived $post from the post body")
     }
