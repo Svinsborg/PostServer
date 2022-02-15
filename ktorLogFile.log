@@ -1,0 +1,52 @@
+15-02-2022 15:26:14.258 [main] TRACE Application - {
+    # application.conf @ file:/C:/Users/Andy/Desktop/Java/PostAppServer/build/resources/main/application.conf: 6
+    "application" : {
+        # application.conf @ file:/C:/Users/Andy/Desktop/Java/PostAppServer/build/resources/main/application.conf: 7
+        "modules" : [
+            # application.conf @ file:/C:/Users/Andy/Desktop/Java/PostAppServer/build/resources/main/application.conf: 7
+            "ru.hell.server.ApplicationKt.module"
+        ]
+    },
+    # application.conf @ file:/C:/Users/Andy/Desktop/Java/PostAppServer/build/resources/main/application.conf: 2
+    "deployment" : {
+        # application.conf @ file:/C:/Users/Andy/Desktop/Java/PostAppServer/build/resources/main/application.conf: 3
+        "port" : 8008
+    },
+    # Content hidden
+    "security" : "***"
+}
+
+15-02-2022 15:26:14.396 [main] INFO  Application - Autoreload is disabled because the development mode is off.
+15-02-2022 15:26:15.106 [main] INFO  Application - Responding at http://0.0.0.0:8008
+15-02-2022 15:26:15.109 [main] INFO  Application - Application started in 0.739 seconds.
+15-02-2022 15:26:15.109 [main] INFO  Application - Application started: io.ktor.application.Application@70e659aa
+15-02-2022 15:26:51.571 [eventLoopGroupProxy-4-1] INFO  Application - 
+-------- Start ---------
+=> Date: 15/02/2022 15:26:51
+=> Remote Host: 127.0.0.1
+=> User agent: Test App client
+=> HTTP method: GET
+=> HTTP URL: "http://127.0.0.1:8008/post"
+=> Status: 200 OK
+=> HTTP version: HTTP/1.1
+--------  END  --------
+15-02-2022 15:28:45.896 [eventLoopGroupProxy-4-2] INFO  Application - 
+-------- Start ---------
+=> Date: 15/02/2022 15:28:45
+=> Remote Host: 127.0.0.1
+=> User agent: Test App client
+=> HTTP method: GET
+=> HTTP URL: "http://127.0.0.1:8008/post"
+=> Status: 200 OK
+=> HTTP version: HTTP/1.1
+--------  END  --------
+15-02-2022 15:29:06.116 [eventLoopGroupProxy-4-3] INFO  Application - 
+-------- Start ---------
+=> Date: 15/02/2022 15:29:01
+=> Remote Host: 192.168.1.72
+=> User agent: Post App Client
+=> HTTP method: GET
+=> HTTP URL: "http://192.168.1.75:8008/post"
+=> Status: 200 OK
+=> HTTP version: HTTP/1.1
+--------  END  --------
