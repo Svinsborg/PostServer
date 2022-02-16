@@ -33,74 +33,59 @@ var y = 0
 
 fun Routing.sql() {
     get("/api/v1/post") {
-        call.application.environment.log.info("-------->>> Request to API <<<--------")
+        call.application.environment.log.info("\n-------->>> Request to API <<<--------\n")
         try {
             connect().use {
                 val posteQuery = it.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)
-                val rsultPostSql = posteQuery.executeQuery(postSql)
+                val resultPostSql = posteQuery.executeQuery(postSql)
 
 
                 val commercialQuery = it.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)
-                val rsultCommercialSql = commercialQuery.executeQuery(commercialSql)
+                val resultCommercialSql = commercialQuery.executeQuery(commercialSql)
 
                 println("Соединение установлено")
                 println("###################################################################################")
 
 
                 listPost.clear()
-                while (rsultPostSql.next()) {
-                    i = rsultPostSql.row
+                while (resultPostSql.next()) {
+                    i = resultPostSql.row
                     if (y % j == 0 && i != 1) {
-                        rsultCommercialSql.next()
-                        listPost.add(
-                            Post(
-                                type = rsultCommercialSql.getString("type"),
-                                //id = rsultCommercialSql.getInt("id"),
-                                author = rsultCommercialSql.getString("author"),
-                                content = rsultCommercialSql.getString("content"),
-                                //created = rsultCommercialSql.getString("created"),
-                                //liked = rsultCommercialSql.getBoolean("liked"),
-                                sharedCount = rsultCommercialSql.getInt("sharedCount"),
-                                commentCount = rsultCommercialSql.getInt("commentCount"),
-                                likeCount = rsultCommercialSql.getInt("likeCount"),
-/*                              address = rsultCommercialSql.getString("address"),
-                                idVideoYT = rsultCommercialSql.getString("youtube"),
-                                location = Pair(
-                                    rsultCommercialSql.getDouble("first"),
-                                    rsultCommercialSql.getDouble("second")
-                                ),
-                                source = rsultCommercialSql.getInt("source"),*/
-                                img = rsultCommercialSql.getString("img"),
-                                url = rsultCommercialSql.getString("url")
-                            )
-                        )
+                        resultCommercialSql.next()
+                        if (resultCommercialSql.isLast){
+                            resultCommercialSql.first()
+                            addCommercialPost(resultCommercialSql)
+                        } else {
+                            addCommercialPost(resultCommercialSql)
+                        }
+
                     }
                     listPost.add(
                         Post(
-                            type = rsultPostSql.getString("type"),
-                            id = rsultPostSql.getInt("id"),
-                            author = rsultPostSql.getString("author"),
-                            content = rsultPostSql.getString("content"),
-                            created = rsultPostSql.getString("created"),
-                            liked = rsultPostSql.getBoolean("liked"),
-                            sharedCount = rsultPostSql.getInt("sharedCount"),
-                            commentCount = rsultPostSql.getInt("commentCount"),
-                            likeCount = rsultPostSql.getInt("likeCount"),
-                            address = rsultPostSql.getString("address"),
-                            idVideoYT = rsultPostSql.getString("youtube"),
+                            type = resultPostSql.getString("type"),
+                            id = resultPostSql.getInt("id"),
+                            author = resultPostSql.getString("author"),
+                            content = resultPostSql.getString("content"),
+                            created = resultPostSql.getString("created"),
+                            liked = resultPostSql.getBoolean("liked"),
+                            sharedCount = resultPostSql.getInt("sharedCount"),
+                            commentCount = resultPostSql.getInt("commentCount"),
+                            likeCount = resultPostSql.getInt("likeCount"),
+                            address = resultPostSql.getString("address"),
+                            idVideoYT = resultPostSql.getString("youtube"),
                             location = Pair(
-                                rsultPostSql.getDouble("first"),
-                                rsultPostSql.getDouble("second")
+                                resultPostSql.getDouble("first"),
+                                resultPostSql.getDouble("second")
                             ),
-                            source = getPostById(rsultPostSql.getInt("source")),
-                            img = rsultPostSql.getString("img"),
-                            url = rsultPostSql.getString("url")
+                            source = getPostById(resultPostSql.getInt("source")),
+                            img = resultPostSql.getString("img"),
+                            url = resultPostSql.getString("url")
                         )
                     )
                     y++
                 }
-                rsultPostSql.close()
-                rsultPostSql.close()
+                resultPostSql.close()
+                resultPostSql.close()
                 connect().close()
                 val json = (Gson().toJson(listPost))
                 listPost.forEach(System.out::println)
@@ -119,7 +104,34 @@ fun Routing.sql() {
         }
         connect().close()
     }
+
 }
+
+fun addCommercialPost(resultCommercialSql: ResultSet) {
+    listPost.add(
+        Post(
+            type = resultCommercialSql.getString("type"),
+            //id = resultCommercialSql.getInt("id"),
+            author = resultCommercialSql.getString("author"),
+            content = resultCommercialSql.getString("content"),
+            //created = resultCommercialSql.getString("created"),
+            //liked = resultCommercialSql.getBoolean("liked"),
+            sharedCount = resultCommercialSql.getInt("sharedCount"),
+            commentCount = resultCommercialSql.getInt("commentCount"),
+            likeCount = resultCommercialSql.getInt("likeCount"),
+/*                              address = resultCommercialSql.getString("address"),
+                                idVideoYT = resultCommercialSql.getString("youtube"),
+                                location = Pair(
+                                    resultCommercialSql.getDouble("first"),
+                                    resultCommercialSql.getDouble("second")
+                                ),
+                                source = resultCommercialSql.getInt("source"),*/
+            img = resultCommercialSql.getString("img"),
+            url = resultCommercialSql.getString("url")
+        )
+    )
+}
+
 
 fun getPostById(postId: Int): Post? {
     lateinit var post : Post
@@ -177,7 +189,7 @@ fun getPostById(postId: Int): Post? {
 fun connect(): Connection {
     val url = "jdbc:mysql://192.168.1.78:3306/SocialNetwork?serverTimezone=UTC"
     val username = "post"
-    val password = "********"
+    val password = "**********"
     val driverNew = "com.mysql.cj.jdbc.Driver"
 
     Class.forName(driverNew)
