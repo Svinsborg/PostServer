@@ -2,15 +2,15 @@ package ru.hell.server
 
 import io.ktor.application.*
 import io.ktor.features.*
+import io.ktor.http.*
+import io.ktor.http.content.*
 import io.ktor.request.*
+import io.ktor.response.*
 import io.ktor.routing.*
+import ru.hell.server.route.*
 import java.text.SimpleDateFormat
 
-
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
-
-val userData = "{ \"users\": [\"Andy\", \"RIDan\", \"Svinsborg\", \"BatMan\"] }"
-
 
 @Suppress("unused") // Referenced in application.conf
 @JvmOverloads
@@ -39,14 +39,28 @@ fun Application.module(testing: Boolean = false) {
 => HTTP version: $httpV
 --------  END  --------"""
         }
-
     }
-    routing {
-        this.root()
 
-        this.rootPost()
+    install(StatusPages) {
+        status(HttpStatusCode.NotFound) {
+            call.respond(TextContent("${it.value} ${it.description}", ContentType.Text.Plain.withCharset(Charsets.UTF_8), it))
+        }
+        exception<NotImplementedError> { e ->
+            call.respond(HttpStatusCode.NotImplemented, Error("Error"))
+            throw e
+        }
+        exception<ParameterConversionException> { e ->
+            call.respond(HttpStatusCode.BadRequest)
+            throw e
+        }
+        exception<Throwable> { e ->
+            call.respond(HttpStatusCode.InternalServerError)
+            throw e
+        }
+    }
 
-        this.sql()
+    install(Routing){
+        v1()
     }
 }
 

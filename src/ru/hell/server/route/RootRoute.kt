@@ -1,4 +1,4 @@
-package ru.hell.server
+package ru.hell.server.route
 
 import io.ktor.application.*
 import io.ktor.http.*

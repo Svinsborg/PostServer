@@ -1,4 +1,4 @@
-package ru.hell.server
+package ru.hell.server.model
 
 enum class PostType {
     POST,

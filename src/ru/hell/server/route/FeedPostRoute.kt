@@ -1,51 +1,36 @@
-package ru.hell.server
+package ru.hell.server.route
 
 import com.google.gson.Gson
 import io.ktor.application.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import ru.hell.server.model.Post
+import ru.hell.server.repository.SqlRepository
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.ResultSet
 import java.sql.SQLException
 
-
-val postSql =
-    """SELECT post.id, users.name AS author, postype.type, source, content, created, likeCount, sharedCount, commentCount, address, youtube, liked, ST_X(location) AS first, ST_Y(location) AS second, img, url 
-         FROM post INNER JOIN (users CROSS JOIN postype) ON (users.id = post.author AND postype.id = post.type)
-        ORDER BY created DESC """.trimIndent()
-
-val commercialSql =
-    """SELECT promo.id, postype.type, member.company AS author, content, img, url, sharedCount, commentCount, likeCount, weight, limitation, views AS second 
-         FROM promo INNER JOIN (member CROSS JOIN postype) ON (member.id = promo.manager AND postype.id = promo.type) 
-        ORDER BY weight DESC """.trimIndent()
-
-val getPostByIdSql =
-    """SELECT post.id, users.name AS author, postype.type, source, content, created, likeCount, sharedCount, commentCount, address, youtube, liked, ST_X(location) AS first, ST_Y(location) AS second, img, url 
-         FROM post INNER JOIN (users CROSS JOIN postype) ON (users.id = post.author AND postype.id = post.type) 
-        WHERE post.id = ? """.trimIndent()
-
 var listPost = mutableListOf<Post>()
-var i = 0
-val j = 2
-var y = 0
+val query = SqlRepository
 
-
-fun Routing.sql() {
+fun Routing.getAllPost() {
     get("/api/v1/post") {
         call.application.environment.log.info("\n-------->>> Request to API <<<--------\n")
         try {
             connect().use {
                 val posteQuery = it.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)
-                val resultPostSql = posteQuery.executeQuery(postSql)
-
+                val resultPostSql = posteQuery.executeQuery(query.postSql)
 
                 val commercialQuery = it.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)
-                val resultCommercialSql = commercialQuery.executeQuery(commercialSql)
+                val resultCommercialSql = commercialQuery.executeQuery(query.commercialSql)
+
+                var i = 0
+                val j = 2
+                var y = 0
 
                 println("Соединение установлено")
                 println("###################################################################################")
-
 
                 listPost.clear()
                 while (resultPostSql.next()) {
@@ -58,7 +43,6 @@ fun Routing.sql() {
                         } else {
                             addCommercialPost(resultCommercialSql)
                         }
-
                     }
                     listPost.add(
                         Post(
@@ -104,7 +88,6 @@ fun Routing.sql() {
         }
         connect().close()
     }
-
 }
 
 fun addCommercialPost(resultCommercialSql: ResultSet) {
@@ -140,7 +123,7 @@ fun getPostById(postId: Int): Post? {
     } else {
         try {
             connect().use {
-                val ps = it.prepareStatement(getPostByIdSql)
+                val ps = it.prepareStatement(query.getPostByIdSql)
                 ps.setInt(1, postId)
                 val posteByIdQuery = ps.executeQuery()
                 println("Соединение установлено")
@@ -189,7 +172,7 @@ fun getPostById(postId: Int): Post? {
 fun connect(): Connection {
     val url = "jdbc:mysql://192.168.1.78:3306/SocialNetwork?serverTimezone=UTC"
     val username = "post"
-    val password = "**********"
+    val password = "!QAZ@WSX"
     val driverNew = "com.mysql.cj.jdbc.Driver"
 
     Class.forName(driverNew)
