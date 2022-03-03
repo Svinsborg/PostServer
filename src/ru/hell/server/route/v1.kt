@@ -7,23 +7,19 @@ import io.ktor.gson.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import io.ktor.serialization.*
 import org.kodein.di.*
 import ru.hell.server.model.Post
 import ru.hell.server.modelDto.PostReceiveDto
 import ru.hell.server.repository.PostRepository
 import ru.hell.server.repository.PostRepositoryImp
 
-
 val di = DI {
     bindSingleton<PostRepository> { PostRepositoryImp() }
 }
 
-
 fun Routing.v1() {
     install(ContentNegotiation) {
         gson()                  // Gson converter
-        json()                  // kotlinx.serialization converter
     }
 
     route("/api/v1/post") {
@@ -31,10 +27,9 @@ fun Routing.v1() {
         get {
             call.application.environment.log.info("\n-------->>> Request to API <<<--------\n")
             val response = repo.getAll()
-            val json = (Gson().toJson(response))
+            call.respond(response)
             response.forEach(System.out::println)
-            call.application.environment.log.info("\n-------->>> Response to API: ALL POST<<<--------\n $json")
-            call.respond(json)
+            call.application.environment.log.info("\n-------->>> Response to API: ALL POST<<<--------\n $response")
         }
         get("/{id}") {
             call.application.environment.log.info("\n-------->>> Request to API <<<--------\n")
@@ -53,7 +48,7 @@ fun Routing.v1() {
                 content = request.content
             )
             val response = repo.save(model)
-            call.respond(response)
+            call.respond(Gson().toJson(response))
         }
 
         post("/{id}/like") {
@@ -73,11 +68,6 @@ fun Routing.v1() {
             val post = repo.removeById(id)
             call.respond(post)
         }
-
-
-
-
-
     }
 }
 
