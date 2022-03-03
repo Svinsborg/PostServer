@@ -263,7 +263,7 @@ class PostRepositoryImp : PostRepository {
 fun connect(): Connection {
     val url = "jdbc:mysql://192.168.1.78:3306/SocialNetwork?serverTimezone=UTC"
     val username = "post"
-    val password = "!QAZ@WSX"
+    val password = "*********"
     val driverNew = "com.mysql.cj.jdbc.Driver"
     Class.forName(driverNew)
     val c = DriverManager.getConnection(url, username, password)
