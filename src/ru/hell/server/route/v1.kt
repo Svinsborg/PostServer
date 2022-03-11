@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.gson.*
+import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
@@ -14,7 +15,7 @@ import ru.hell.server.repository.PostRepository
 import ru.hell.server.repository.PostRepositoryImp
 
 val di = DI {
-    bindSingleton<PostRepository> { PostRepositoryImp() }
+    bindEagerSingleton<PostRepository> { PostRepositoryImp() }
 }
 
 fun Routing.v1() {
@@ -35,9 +36,8 @@ fun Routing.v1() {
             call.application.environment.log.info("\n-------->>> Request to API <<<--------\n")
             val id = call.parameters["id"]?.toLongOrNull() ?: throw ParameterConversionException("id", "Long")
             val post = repo.getById(id)
-            val json = (Gson().toJson(post))
-            call.application.environment.log.info("\n-------->>> Response to API: POST BY ID <<<--------\n $json")
-            call.respond(json)
+            post?.let { call.respond(it) } ?: call.respond(HttpStatusCode.NotFound)
+            call.application.environment.log.info("\n-------->>> Response to API: POST BY ID <<<--------\n $post")
         }
 
         post {

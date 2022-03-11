@@ -23,7 +23,8 @@ class PostRepositoryImp : PostRepository {
             try {
                 connect().use {
                     val posteQuery = it.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)
-                    val commercialQuery = it.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)
+                    val commercialQuery =
+                        it.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)
 
                     var i = 0
                     val j = 2
@@ -89,7 +90,7 @@ class PostRepositoryImp : PostRepository {
 
     override suspend fun getById(id: Long): Post? =
         withContext(context) {
-            lateinit var post: Post
+            var post: Post? = null
             if (id.equals(0L)) {
                 return@withContext null
             } else {
@@ -97,37 +98,36 @@ class PostRepositoryImp : PostRepository {
                     connect().use {
                         val ps = it.prepareStatement(query.getPostByIdSql)
                         ps.setLong(1, id)
-                        val postByIdQuery = ps.executeQuery()
-                        println("Соединение установлено")
-                        if (postByIdQuery != null) {
-                            postByIdQuery.next()
-                            post = Post(
-                                type = postByIdQuery.getString("type"),
-                                id = postByIdQuery.getInt("id"),
-                                author = postByIdQuery.getString("author"),
-                                content = postByIdQuery.getString("content"),
-                                created = postByIdQuery.getString("created"),
-                                liked = postByIdQuery.getBoolean("liked"),
-                                sharedCount = postByIdQuery.getInt("sharedCount"),
-                                commentCount = postByIdQuery.getInt("commentCount"),
-                                likeCount = postByIdQuery.getInt("likeCount"),
-                                address = postByIdQuery.getString("address"),
-                                idVideoYT = postByIdQuery.getString("youtube"),
-                                location = Pair(
-                                    postByIdQuery.getDouble("first"),
-                                    postByIdQuery.getDouble("second")
-                                ),
-                                img = postByIdQuery.getString("img"),
-                                url = postByIdQuery.getString("url")
-                            )
-                            println(post)
-                        } else {
-                            println("Data empty")
-                            return@use null
+                        ps.executeQuery().use { postByIdQuery ->
+                            println("Соединение установлено")
+                            if (postByIdQuery != null) {
+                                postByIdQuery.next()
+                                post = Post(
+                                    type = postByIdQuery.getString("type"),
+                                    id = postByIdQuery.getInt("id"),
+                                    author = postByIdQuery.getString("author"),
+                                    content = postByIdQuery.getString("content"),
+                                    created = postByIdQuery.getString("created"),
+                                    liked = postByIdQuery.getBoolean("liked"),
+                                    sharedCount = postByIdQuery.getInt("sharedCount"),
+                                    commentCount = postByIdQuery.getInt("commentCount"),
+                                    likeCount = postByIdQuery.getInt("likeCount"),
+                                    address = postByIdQuery.getString("address"),
+                                    idVideoYT = postByIdQuery.getString("youtube"),
+                                    location = Pair(
+                                        postByIdQuery.getDouble("first"),
+                                        postByIdQuery.getDouble("second")
+                                    ),
+                                    img = postByIdQuery.getString("img"),
+                                    url = postByIdQuery.getString("url")
+                                )
+                                println(post)
+                            } else {
+                                println("Data empty")
+                                return@use null
+                            }
                         }
-                        postByIdQuery.close()
                     }
-                    connect().close()
                 } catch (err: SQLException) {
                     err.printStackTrace()
                     println("Не удалось подключиться")
@@ -136,7 +136,6 @@ class PostRepositoryImp : PostRepository {
                     println("Others: " + err.message)
                 }
             }
-            connect().close()
             return@withContext post
         }
 
@@ -179,7 +178,6 @@ class PostRepositoryImp : PostRepository {
             } else {
                 return@withContext (null)
             }
-            connect().close()
             return@withContext (item)
         }
 
@@ -204,7 +202,6 @@ class PostRepositoryImp : PostRepository {
                     println("Others: " + err.message)
                     return@withContext ("Отказ")
                 }
-                connect().close()
             } else {
                 return@withContext ("Запрет!")
             }
@@ -231,7 +228,6 @@ class PostRepositoryImp : PostRepository {
                 println("Others: " + err.message)
                 return@withContext (null)
             }
-            connect().close()
             return@withContext getById(id)
         }
 
@@ -255,7 +251,6 @@ class PostRepositoryImp : PostRepository {
                 println("Others: " + err.message)
                 return@withContext (null)
             }
-            connect().close()
             return@withContext getById(id)
         }
 }
@@ -263,7 +258,7 @@ class PostRepositoryImp : PostRepository {
 fun connect(): Connection {
     val url = "jdbc:mysql://192.168.1.78:3306/SocialNetwork?serverTimezone=UTC"
     val username = "post"
-    val password = "*********"
+    val password = "!QAZ@WSX"
     val driverNew = "com.mysql.cj.jdbc.Driver"
     Class.forName(driverNew)
     val c = DriverManager.getConnection(url, username, password)
