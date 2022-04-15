@@ -4,6 +4,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.withContext
 import ru.hell.server.model.Post
+import ru.hell.server.modelDto.PostDto
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.ResultSet
@@ -258,7 +259,7 @@ class PostRepositoryImp : PostRepository {
 fun connect(): Connection {
     val url = "jdbc:mysql://192.168.1.78:3306/SocialNetwork?serverTimezone=UTC"
     val username = "post"
-    val password = "!QAZ@WSX"
+    val password = "********"
     val driverNew = "com.mysql.cj.jdbc.Driver"
     Class.forName(driverNew)
     val c = DriverManager.getConnection(url, username, password)

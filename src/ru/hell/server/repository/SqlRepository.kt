@@ -36,4 +36,14 @@ object SqlRepository {
         """UPDATE SocialNetwork.post
               SET liked = ?, likeCount = likeCount - 1            
             WHERE post.id = ? """.trimIndent()
+
+    val userAdd =
+        """"INSERT INTO SocialNetwork.users (name, email, registry, pass) 
+            VALUES (?, ?, ?, ?)""".trimIndent()
+
+    val searchUserByName =
+        """"SELECT id, name, email, registry 
+              FROM users 
+             WHERE `name` = '?' """.trimIndent()
+
 }
